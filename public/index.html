@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+<body>
+    <h1>Bem vindo ao Downloader</h1>
+    <h2>Connectado como:<span id="thisIsAHoster">User</span></h2>
+    <div class="connect-panel">
+        <input placeholder="Insira o IP do Hoster" id="connectInput">
+        <button id="connectButton">Conectar</button>
+        <button id="makeMyHoster">Ser o Hoster</button>
+    </div>
+    <ul id="listOfUsers">
+        <li><strong>Usuarios:</strong></li>
+    </ul>
+    <script src="./socket.js"></script>
+    <script>
+        const socket = io();
+        async function RequestToServer(serverIp){
+            const dados = await fetch(`http://${serverIp}:3000/data`,{
+                method: "GET",
+            });
+            resposta = await dados.json();
+            if(typeof(resposta.invalidHost) === "boolean" || typeof(resposta.invalidHost) === "undefined"){
+                alert("Host Invalido!")
+            }
+        }
+        async function MakeMeAHost(){
+            const dados = await fetch(`http://localhost:3000/makeMeHost`,{
+                method: "GET",
+            });
+            resposta = await dados.json();
+            window.location.reload()
+        }
+        document.querySelector("#connectButton").addEventListener("click",()=>{
+            RequestToServer(document.querySelector("#connectInput").value)
+        })
+        document.querySelector("#makeMyHoster").addEventListener("click",()=>{
+            MakeMeAHost()
+        })
+        addEventListener("DOMContentLoaded",async ()=>{
+            const dados = await fetch('http://localhost:3000/data',{
+                method: "GET",
+            });
+            resposta = await dados.json();
+            if(resposta.isHoster){
+                document.querySelector('.connect-panel').style.display = 'none'
+                document.querySelector('#thisIsAHoster').innerHTML = 'HOSTER'
+                resposta.users.forEach(element => {
+                    const novoElemento = document.createElement('li')
+                    novoElemento.innerHTML = element.nome
+                    document.querySelector('#listOfUsers').appendChild(novoElemento)
+                });
+            }else{
+                document.querySelector("#listOfUsers").style.display = 'none'
+            }
+        })
+    </script>
+</body>
+</html>
