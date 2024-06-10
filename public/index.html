@@ -24,8 +24,10 @@
                 method: "GET",
             });
             resposta = await dados.json();
-            if(typeof(resposta.invalidHost) === "boolean" || typeof(resposta.invalidHost) === "undefined"){
+            if(typeof(resposta.invalidHost) === "boolean"){
                 alert("Host Invalido!")
+            }else{
+                alert("Conectado!")
             }
         }
         async function MakeMeAHost(){
